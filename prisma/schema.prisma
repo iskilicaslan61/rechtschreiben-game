@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  role      Role      @default(CHILD)
+  avatar    String?
+  parentId  String?
+  parent    User?     @relation("ParentChild", fields: [parentId], references: [id])
+  children  User[]    @relation("ParentChild")
+  sessions  GameSession[]
+  progress  Progress?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum Role {
+  CHILD
+  PARENT
+}
+
+model GameSession {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module      String
+  difficulty  String    @default("mittel")
+  score       Int       @default(0)
+  totalItems  Int       @default(0)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Progress {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalScore Int      @default(0)
+  stars      Int      @default(0)
+  badges     String   @default("[]")
+  streak     Int      @default(0)
+  lastPlayed DateTime?
+  updatedAt  DateTime @updatedAt
+}
+
+model Question {
+  id          Int     @id @default(autoincrement())
+  type        String
+  emoji       String
+  word        String
+  answer      String
+  wrongAnswer String?
+  hint        String?
+  difficulty  String  @default("mittel")
+}
