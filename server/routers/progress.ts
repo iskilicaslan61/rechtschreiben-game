@@ -21,9 +21,8 @@ export const progressRouter = createTRPCRouter({
       .select('id, name, avatar')
       .eq('role', 'CHILD');
 
-    if (!children?.length) return [];
-
-    const childIds = children.map(c => c.id);
+    const childIds = (children ?? []).map(c => c.id);
+    if (!childIds.length) return [] as { id: string; userId: string; totalScore: number; user: { name: string; avatar: string | null } }[];
     const { data: progresses } = await ctx.supabase
       .from('Progress')
       .select('*')
@@ -42,10 +41,8 @@ export const progressRouter = createTRPCRouter({
       .select('id, name, avatar, createdAt')
       .eq('parentId', ctx.session.user.id);
 
-    if (!children?.length) return [];
-
-    const results = await Promise.all(
-      children.map(async child => {
+    return Promise.all(
+      (children ?? []).map(async child => {
         const { data: progress } = await ctx.supabase
           .from('Progress')
           .select('*')
@@ -55,11 +52,9 @@ export const progressRouter = createTRPCRouter({
           child,
           progress: progress
             ? { ...progress, badges: JSON.parse(progress.badges) as string[] }
-            : { totalScore: 0, stars: 0, badges: [], streak: 0, lastPlayed: null },
+            : { totalScore: 0, stars: 0, badges: [] as string[], streak: 0, lastPlayed: null as string | null },
         };
       })
     );
-
-    return results;
   }),
 });
