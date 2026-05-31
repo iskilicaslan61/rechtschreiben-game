@@ -35,9 +35,9 @@ function moduleEmoji(mod: string) {
 }
 
 function ParentDashboard({ parentId, parentName }: { parentId: string; parentName: string }) {
-  const { data: childrenProgress = [] } = trpc.progress.childrenProgress.useQuery();
-  const { data: childrenSessions = [] } = trpc.session.childrenSessions.useQuery();
-  const { data: leaderboard = [] } = trpc.progress.leaderboard.useQuery();
+  const { data: childrenProgress } = trpc.progress.childrenProgress.useQuery();
+  const { data: childrenSessions } = trpc.session.childrenSessions.useQuery();
+  const { data: leaderboard } = trpc.progress.leaderboard.useQuery();
 
   return (
     <main className="max-w-2xl mx-auto px-5 py-10">
@@ -66,14 +66,14 @@ function ParentDashboard({ parentId, parentName }: { parentId: string; parentNam
         <h2 className="font-bold text-blue-800 text-lg mb-4 flex items-center gap-2">
           <span className="text-xl">👨‍👧‍👦</span> Meine Kinder
         </h2>
-        {childrenProgress.length === 0 ? (
+        {!childrenProgress?.length ? (
           <p className="text-blue-400 text-sm text-center py-4">
             Noch keine Kinder verknüpft.<br />
             <span className="text-xs">Dein Kind muss deine Eltern-ID bei der Registrierung angeben.</span>
           </p>
         ) : (
           <div className="flex flex-col gap-4">
-            {childrenProgress.map(({ child, progress }) => (
+            {(childrenProgress ?? []).map(({ child, progress }) => (
               <div key={child.id} className="bg-blue-50 rounded-xl border border-blue-100 p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xl">👦</span>
@@ -101,11 +101,11 @@ function ParentDashboard({ parentId, parentName }: { parentId: string; parentNam
         <h2 className="font-bold text-blue-800 text-lg mb-4 flex items-center gap-2">
           <span className="text-xl">🎮</span> Letzte Spiele der Kinder
         </h2>
-        {childrenSessions.length === 0 ? (
+        {!childrenSessions?.length ? (
           <p className="text-blue-400 text-sm text-center py-4">Noch keine Spiele.</p>
         ) : (
           <div className="flex flex-col gap-2">
-            {childrenSessions.map(s => (
+            {(childrenSessions ?? []).map(s => (
               <div key={s.id}
                 className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 text-sm">
                 <span className="text-lg">{moduleEmoji(s.module)}</span>
@@ -126,9 +126,9 @@ function ParentDashboard({ parentId, parentName }: { parentId: string; parentNam
         <h2 className="font-bold text-blue-800 text-lg mb-4 flex items-center gap-2">
           <span className="text-xl">🏆</span> Bestenliste
         </h2>
-        {leaderboard.length === 0
+        {!leaderboard?.length
           ? <p className="text-blue-400 text-sm text-center py-4">Noch keine Einträge.</p>
-          : leaderboard.map((entry, i) => (
+          : (leaderboard ?? []).map((entry, i) => (
             <div key={entry.id}
               className="flex items-center gap-3 p-2.5 border-b border-blue-50 last:border-0
                 hover:bg-blue-50/50 rounded-lg transition-colors">
