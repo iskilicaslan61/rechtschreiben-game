@@ -65,15 +65,16 @@ export const sessionRouter = createTRPCRouter({
     return data ?? [];
   }),
 
-  childrenSessions: protectedProcedure.query(async ({ ctx }) => {
+  childrenSessions: protectedProcedure.query(async ({ ctx }): Promise<Array<Record<string, unknown> & { childName: string }>> => {
     const { data: children } = await ctx.supabase
       .from('User')
       .select('id, name')
       .eq('parentId', ctx.session.user.id);
 
-    if (!children?.length) return [];
+    const safeChildren = (children as { id: string; name: string }[] | null) ?? [];
+    if (!safeChildren.length) return [];
 
-    const childIds = children.map(c => c.id);
+    const childIds = safeChildren.map(c => c.id);
     const { data: sessions } = await ctx.supabase
       .from('GameSession')
       .select('*')
@@ -81,7 +82,10 @@ export const sessionRouter = createTRPCRouter({
       .order('createdAt', { ascending: false })
       .limit(20);
 
-    const nameMap = Object.fromEntries(children.map(c => [c.id, c.name]));
-    return (sessions ?? []).map(s => ({ ...s, childName: nameMap[s.userId] ?? 'Unbekannt' }));
+    const nameMap = Object.fromEntries(safeChildren.map(c => [c.id, c.name]));
+    return ((sessions as Record<string, unknown>[] | null) ?? []).map(s => ({
+      ...s,
+      childName: nameMap[s['userId'] as string] ?? 'Unbekannt',
+    }));
   }),
 });

@@ -77,7 +77,7 @@ const Icon = ({
         transition={{
           duration: 5 + (index % 5),
           repeat: Infinity,
-          repeatType: 'mirror',
+          repeatType: 'mirror' as const,
           ease: 'easeInOut' as const,
         }}
       >
