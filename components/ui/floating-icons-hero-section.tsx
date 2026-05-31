@@ -78,7 +78,7 @@ const Icon = ({
           duration: 5 + (index % 5),
           repeat: Infinity,
           repeatType: 'mirror',
-          ease: 'easeInOut',
+          ease: 'easeInOut' as const,
         }}
       >
         <iconData.icon className="w-8 h-8 md:w-10 md:h-10 text-blue-500" />

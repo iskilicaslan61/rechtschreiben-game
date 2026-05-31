@@ -33,7 +33,7 @@ function ElegantShape({
     >
       <motion.div
         animate={{ y: [0, 15, 0] }}
-        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" as const }}
         style={{ width, height }}
         className="relative"
       >
