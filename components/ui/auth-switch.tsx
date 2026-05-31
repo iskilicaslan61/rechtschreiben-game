@@ -68,10 +68,10 @@ function FloatInput({
   );
 }
 
-export default function AuthSwitch() {
+export default function AuthSwitch({ initialSignUp = false }: { initialSignUp?: boolean }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(initialSignUp);
 
   const [siEmail, setSiEmail] = useState("");
   const [siPass, setSiPass] = useState("");
@@ -86,7 +86,7 @@ export default function AuthSwitch() {
   const [suError, setSuError] = useState("");
 
   const register = trpc.auth.register.useMutation({
-    onSuccess: () => { setSuError(""); setIsSignUp(false); },
+    onSuccess: () => { setSuError(""); router.push('/login'); },
     onError: (e) => setSuError(e.message),
   });
 

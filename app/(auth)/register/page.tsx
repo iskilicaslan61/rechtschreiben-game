@@ -1,9 +1,5 @@
-"use client";
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import AuthSwitch from '@/components/ui/auth-switch';
 
 export default function RegisterPage() {
-  const router = useRouter();
-  useEffect(() => { router.replace('/login'); }, [router]);
-  return null;
+  return <AuthSwitch initialSignUp={true} />;
 }
